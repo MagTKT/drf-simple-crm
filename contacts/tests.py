@@ -47,13 +47,13 @@ class CreateContactTestCase(TestCase):
 
     # tester la creation d'un bon contact
     def test_new_contact_is_registered(self):
-        contact_id = self.contact.id
+        old_contacts = Contact.objects.count()
         first_name = self.contact.first_name
         last_name = self.contact.last_name
         phone_numer = self.contact.phone_number
         email = self.contact.email
         tag = self.contact.tag
-        response = self.client.post(reverse('contact_create', args=(contact_id,)), {
+        response = self.client.post(reverse('contact_create'), {
             'first_name': first_name,
             'last_name': last_name,
             'email': email,
@@ -66,20 +66,22 @@ class CreateContactTestCase(TestCase):
 
     # tester la creation d'un mauvais contact
     def test_new_contact_is_not_registered(self):
+        old_contacts = Contact.objects.count()
         contact_id = self.contact.id
         first_name = self.contact.first_name
         last_name = self.contact.last_name
         phone_numer = self.contact.phone_number
         email = self.contact.email
         tag = self.contact.tag
-        response = self.client.post(reverse('contact_create', args=(contact_id,)), {
+        response = self.client.post(reverse('contact_create'), {
             'first_name': first_name,
             'last_name': last_name,
             'email': 'tutu',
-            'phone_number': 0000000000,
+            'phone_number': 000000000,
             'email': email,
             'tag': tag
         })
+        new_contacts = Contact.objects.count()
         self.assertEqual(new_contacts, old_contacts + 1)
 
 
@@ -94,13 +96,33 @@ class CreateContactTestCase(TestCase):
         response = self.client.post(reverse('contact_update', args=(contact_id,)), {
             'first_name': first_name,
             'last_name': last_name,
-            'phone_number': 0000000000,
+            'phone_number': 9898989898,
             'email': email,
+            'tag': tag
+        })
+        self.assertEqual(response.status_code, 200)
+
+    
+    # tester la modification d'un mauvais contact
+    def test_not_modification_contact(self):
+        contact_id = self.contact.id
+        first_name = self.contact.first_name
+        last_name = self.contact.last_name
+        phone_numer = self.contact.phone_number
+        email = self.contact.email
+        tag = self.contact.tag
+        response = self.client.post(reverse('contact_update', args=(contact_id,)), {
+            'first_name': first_name,
+            'last_name': last_name,
+            'phone_number': 9898989898,
+            'email': 'test@gmail.com',
             'tag': tag
         })
         new_contacts = Contact.objects.count()
         self.assertEqual(response.status_code, 200)
-    # tester la modification d'un mauvais contact
 
     # tester la suppression d'un contact
-
+    def test_suppression_contact(self):
+        contact_id = self.contact.id
+        response = self.client.delete(reverse('contact_delete', args=(contact_id,)))
+        self.assertEqual(response.status_code, 302)
