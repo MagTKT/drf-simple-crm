@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Bienvenue{% endblock %}</title>
+        {% block stylesheets %}
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="css/shop-homepage.css" rel="stylesheet">
+        
+        {% endblock %}
+        <script src="https://code.jquery.com/jquery-3.4.1.js"
+  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+  crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    </head>
+    
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">Bienvenue</a>
+        </nav>
+        <div class='container'>
+        <h1>Liste des inscrits</h1>
+            {% if contact_list %}
+                <ul class="list-group">
+                {% for contact in contact_list %}
+                <li class="list-group-item"><a href="/contact/list_contact{{ contact.id }}/">{{ contact.email }}</a>
+                    <button type="button" class="btn btn-dark">Supprimer</button>
+                    <button type="button" class="btn btn-dark">modifier</button>
+                </li>
+                
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No contact are available.</p>
+            {% endif %}
+        </div>
+    </body>
+    
+</html>
+
