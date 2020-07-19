@@ -4,5 +4,5 @@ from django.contrib import admin
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('contact/', include('contact.urls')),
+    path('/', include('contacts.urls')),
 ]
