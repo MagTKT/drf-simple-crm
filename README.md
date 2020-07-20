@@ -10,16 +10,13 @@ puis :
 
 docker-compose exec web python manage.py migrate
 
-puis :
-
-docker-compose exec web python manage.py makemigrations
-
 access creation a la base de données : 
 
 docker-compose exec web python manage.py createsuperuser
 
 
 Se diriger vers : http://localhost:8000//contacts
+acces a l'admin : http://localhost:8000/admin
 
 Pour les test :
 
