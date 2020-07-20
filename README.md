@@ -21,5 +21,8 @@ docker-compose exec web python manage.py createsuperuser
 
 Se diriger vers : http://localhost:8000//contacts
 
+Pour les test :
+
+docker-compose exec web python manage.py test
 
 

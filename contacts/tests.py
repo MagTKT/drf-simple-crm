@@ -1,24 +1,128 @@
 from django.test import TestCase
 
 from .models import Contact
+from django.urls import reverse
 
+    
+class DetailPageTestCase(TestCase):
+    
+    # test en base de données
+    def test_detail_page_returns_200(self):
+        name = Contact.objects.create(first_name="Transmission Impossible")
+        name_id = Contact.objects.get(first_name='Transmission Impossible').id
+        response = self.client.get(reverse('contact_detail', args=(name_id,)))
+        self.assertEqual(response.status_code, 200)
 
-class ContactModelTests(TestCase):
+    # test that detail page returns a 404 if the item does not exist
+    def test_detail_page_returns_404(self):
+        name = Contact.objects.create(first_name="Transmission Impossible")
+        name_id = Contact.objects.get(first_name='Transmission Impossible').id + 1
+        response = self.client.get(reverse('contact_detail', args=(name_id,)))
+        self.assertEqual(response.status_code, 404)
 
-    def test_verification_of_email_validate(self):
+class CreateContactTestCase(TestCase):
+    
+    def setUp(self):
+        Contact.objects.create(
+            first_name="test", 
+            last_name='titi', 
+            email="test@gmail.forever", 
+            phone_number=0000000000, 
+            tag='dev'
+        )
+        self.contact = Contact.objects.get(
+            first_name="test", 
+            last_name='titi', 
+            email="test@gmail.forever", phone_number=0000000000, 
+            tag='dev'
+        )
+
+    # teste l'affichage des contacts
+    def test_index(self):
         """
-            Verification of email validate
+        Affichage de la page d'accueil : liste des contacts.
         """
-        email = 'email@email.com'
-        self.assertEqual(data['email'], 'email@email.com')
-
-    # tester l'affichage des contacts
+        response = self.client.get(reverse('contact_list'))
+        self.assertEqual(response.status_code, 200)
 
     # tester la creation d'un bon contact
+    def test_new_contact_is_registered(self):
+        old_contacts = Contact.objects.count()
+        first_name = self.contact.first_name
+        last_name = self.contact.last_name
+        phone_numer = self.contact.phone_number
+        email = self.contact.email
+        tag = self.contact.tag
+        response = self.client.post(reverse('contact_create'), {
+            'first_name': first_name,
+            'last_name': last_name,
+            'email': email,
+            'phone_number': 0000000000,
+            'email': email,
+            'tag': tag
+        })
+        new_contacts = Contact.objects.count()
+        self.assertEqual(new_contacts, old_contacts + 1)
+
     # tester la creation d'un mauvais contact
+    def test_new_contact_is_not_registered(self):
+        old_contacts = Contact.objects.count()
+        contact_id = self.contact.id
+        first_name = self.contact.first_name
+        last_name = self.contact.last_name
+        phone_numer = self.contact.phone_number
+        email = self.contact.email
+        tag = self.contact.tag
+        response = self.client.post(reverse('contact_create'), {
+            'first_name': first_name,
+            'last_name': last_name,
+            'email': 'tutu',
+            'phone_number': 000000000,
+            'email': email,
+            'tag': tag
+        })
+        new_contacts = Contact.objects.count()
+        self.assertEqual(new_contacts, old_contacts + 1)
+
 
     # tester la modification d'un bon contact
+    def test_modification_contact(self):
+        contact_id = self.contact.id
+        first_name = self.contact.first_name
+        last_name = self.contact.last_name
+        phone_numer = self.contact.phone_number
+        email = self.contact.email
+        tag = self.contact.tag
+        response = self.client.post(reverse('contact_update', args=(contact_id,)), {
+            'first_name': first_name,
+            'last_name': last_name,
+            'phone_number': 9898989898,
+            'email': email,
+            'tag': tag
+        })
+        self.assertEqual(response.status_code, 200)
+
+    
     # tester la modification d'un mauvais contact
+    def test_not_modification_contact(self):
+        contact_id = self.contact.id
+        first_name = self.contact.first_name
+        last_name = self.contact.last_name
+        phone_numer = self.contact.phone_number
+        email = self.contact.email
+        tag = self.contact.tag
+        response = self.client.post(reverse('contact_update', args=(contact_id,)), {
+            'first_name': first_name,
+            'last_name': last_name,
+            'phone_number': 9898989898,
+            'email': 'test@gmail.com',
+            'tag': tag
+        })
+        new_contacts = Contact.objects.count()
+        self.assertEqual(response.status_code, 200)
 
     # tester la suppression d'un contact
-
+    def test_suppression_contact(self):
+        contact_id = self.contact.id
+        response = self.client.delete(reverse('contact_delete', args=(contact_id,)))
+        self.assertEqual(response.status_code, 302)
